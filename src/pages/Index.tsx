@@ -1,11 +1,33 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from 'react';
+import { Header } from '@/components/Header';
+import { ChatPanel } from '@/components/ChatPanel';
+import { PreviewPanel } from '@/components/PreviewPanel';
 
 const Index = () => {
+  const [generatedCode, setGeneratedCode] = useState('');
+  const [currentFilename, setCurrentFilename] = useState('');
+
+  const handleCodeGenerated = (code: string, filename: string) => {
+    setGeneratedCode(code);
+    setCurrentFilename(filename);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="h-screen flex flex-col bg-background">
+      {/* Header */}
+      <Header />
+      
+      {/* Main Content - Two Column Layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Panel - Chat */}
+        <div className="w-1/2 min-w-[400px]">
+          <ChatPanel onCodeGenerated={handleCodeGenerated} />
+        </div>
+        
+        {/* Right Panel - Preview */}
+        <div className="flex-1">
+          <PreviewPanel code={generatedCode} filename={currentFilename} />
+        </div>
       </div>
     </div>
   );
