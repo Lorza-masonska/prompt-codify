@@ -94,7 +94,7 @@ export function AIConfigDialog() {
     }
 
     // Validate required fields
-    if (currentProvider.id !== 'huggingface' && !settings.apiKey.trim()) {
+    if (currentProvider.id !== 'huggingface' && currentProvider.id !== 'ollama' && !settings.apiKey.trim()) {
       toast({
         title: "Błąd",
         description: `${currentProvider.apiKeyLabel} jest wymagany`,
