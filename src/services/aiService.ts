@@ -148,24 +148,32 @@ class AIService {
   private async callOllama(messages: AIMessage[]): Promise<string> {
     const prompt = messages.map(m => `${m.role}: ${m.content}`).join('\n\n');
     
-    const response = await fetch(`${this.settings!.baseUrl}/api/generate`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: this.settings!.model,
-        prompt: `Jesteś ekspertem od tworzenia stron internetowych. Generujesz kompletny, funkcjonalny kod HTML z CSS i JavaScript. Odpowiadaj w języku polskim.\n\n${prompt}`,
-        stream: false
-      }),
-    });
+    try {
+      console.log('Ollama: Attempting connection to:', this.settings!.baseUrl);
+      const response = await fetch(`${this.settings!.baseUrl}/api/generate`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: this.settings!.model,
+          prompt: `Jesteś ekspertem od tworzenia stron internetowych. Generujesz kompletny, funkcjonalny kod HTML z CSS i JavaScript. Odpowiadaj w języku polskim.\n\n${prompt}`,
+          stream: false
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Ollama error: ${response.status}`);
+      if (!response.ok) {
+        console.error('Ollama response not ok:', response.status, response.statusText);
+        throw new Error(`Ollama error: ${response.status} - ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('Ollama response received:', data);
+      return data.response || 'Brak odpowiedzi z Ollama';
+    } catch (error) {
+      console.error('Ollama connection error:', error);
+      throw new Error(`Błąd połączenia z Ollama: ${error instanceof Error ? error.message : 'Nieznany błąd'}. Sprawdź czy Ollama jest uruchomiona (ollama serve) i czy masz model (ollama pull llama3.2:3b)`);
     }
-
-    const data = await response.json();
-    return data.response || 'Brak odpowiedzi z Ollama';
   }
 
   private async callHuggingFace(prompt: string): Promise<string> {
