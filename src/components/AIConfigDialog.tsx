@@ -273,7 +273,8 @@ export function AIConfigDialog() {
                 {currentProvider.id === 'ollama' && (
                   <>
                     <p>• Zainstaluj Ollama z: ollama.ai</p>
-                    <p>• Uruchom: ollama serve</p>
+                    <p>• Uruchom z CORS: OLLAMA_ORIGINS=* ollama serve</p>
+                    <p>• Lub: set OLLAMA_ORIGINS=* (Windows) i ollama serve</p>
                     <p>• Pobierz model: ollama pull llama3.2:3b</p>
                   </>
                 )}
