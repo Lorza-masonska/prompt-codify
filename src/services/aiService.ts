@@ -157,7 +157,7 @@ class AIService {
         },
         body: JSON.stringify({
           model: this.settings!.model,
-          prompt: `Jesteś ekspertem od tworzenia stron internetowych. Generujesz kompletny, funkcjonalny kod HTML z CSS i JavaScript. Odpowiadaj w języku polskim.\n\n${prompt}`,
+          prompt: `Jesteś ekspertem od tworzenia stron internetowych. Generujesz kompletny, funkcjonalny kod HTML z CSS i JavaScript w jednym pliku. CSS w <style>, JS w <script>. NIE używaj zewnętrznych plików. Odpowiadaj w języku polskim.\n\n${prompt}`,
           stream: false
         }),
       });
@@ -218,17 +218,21 @@ class AIService {
         role: 'user',
         content: `Stwórz kompletną stronę internetową na podstawie tego opisu: "${prompt}". 
         
-        Wygeneruj:
-        1. Kompletny kod HTML z CSS i JavaScript
-        2. Responsywny design
-        3. Nowoczesny wygląd
-        4. Działające funkcjonalności
+        WAŻNE WYMAGANIA:
+        1. Generuj KOMPLETNY HTML z CSS i JavaScript wewnątrz jednego pliku
+        2. CSS musi być w sekcji <style> w <head>
+        3. JavaScript musi być w sekcji <script> przed </body>
+        4. NIE używaj zewnętrznych plików CSS ani JS (href="style.css", src="script.js")
+        5. Kod musi być gotowy do uruchomienia bez dodatkowych plików
+        6. Responsywny design
+        7. Nowoczesny wygląd
+        8. Działające funkcjonalności
         
         Odpowiedz w formacie:
         OPIS: [krótki opis tego co utworzyłeś]
         FILENAME: [nazwa pliku, np. index.html]
         CODE:
-        [pełny kod HTML]`
+        [pełny kod HTML z CSS i JS inline]`
       }
     ];
 
