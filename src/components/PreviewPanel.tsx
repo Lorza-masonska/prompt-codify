@@ -8,7 +8,7 @@ interface PreviewPanelProps {
   filename: string;
 }
 
-// Bardzo agresywna funkcja wyciągająca czysty HTML do podglądu
+// Funkcja wyciągająca czysty HTML do podglądu
 function extractPureHtml(code: string) {
   if (!code) return '';
   // Znajdź początek kodu HTML (najpierw DOCTYPE, potem <html>)
@@ -61,11 +61,6 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
     setIsRefreshing(true);
     setTimeout(() => setIsRefreshing(false), 500);
   };
-
-  // Dla debugowania — sprawdź co trafia do podglądu
-  // Usuń jeśli nie chcesz logów!
-  console.log("Kod AI:", code);
-  console.log("Kod do podglądu:", extractPureHtml(code));
 
   if (!code) {
     return (
@@ -194,6 +189,7 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
                 deviceMode === 'mobile' ? "max-w-sm" : "w-full"
               )}
             >
+              {/* To jest kluczowa zmiana: wyświetlamy kod przez iframe srcDoc */}
               <iframe
                 key={isRefreshing ? 'refreshing' : 'normal'}
                 srcDoc={extractPureHtml(code)}
