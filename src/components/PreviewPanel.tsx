@@ -9,6 +9,20 @@ interface PreviewPanelProps {
   filename: string;
 }
 
+// Funkcja usuwająca nagłówki, Markdown i inne zbędne fragmenty
+function extractPureHtml(code: string) {
+  if (!code) return '';
+  // Usuń nagłówki pliku (np. "index.html" na początku linii)
+  code = code.replace(/^index\.html\s*/i, '');
+  // Usuń "CODE:" jeśli występuje
+  code = code.replace(/^CODE:\s*/i, '');
+  // Usuń znaczniki Markdown ```html ... ```
+  code = code.replace(/^```html([\s\S]*?)```$/i, '$1').trim();
+  // Usuń ogólne znaczniki Markdown ``` ... ```
+  code = code.replace(/^```([\s\S]*?)```$/i, '$1').trim();
+  return code;
+}
+
 export function PreviewPanel({ code, filename }: PreviewPanelProps) {
   const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
   const [deviceMode, setDeviceMode] = useState<'desktop' | 'mobile'>('desktop');
@@ -27,17 +41,12 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
   };
 
   const handleDownloadZip = async () => {
-    // Prosty sposób na stworzenie ZIP-a w przeglądarce
-    // W rzeczywistej aplikacji można użyć biblioteki jak JSZip
     const files = [
       { name: filename || 'index.html', content: code }
     ];
-    
-    // Symulacja tworzenia ZIP-a
     const zipContent = files.map(file => 
       `File: ${file.name}\n${'='.repeat(50)}\n${file.content}\n\n`
     ).join('');
-    
     const blob = new Blob([zipContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -52,13 +61,6 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
   const refreshPreview = () => {
     setIsRefreshing(true);
     setTimeout(() => setIsRefreshing(false), 500);
-  };
-
-  const createDataUrl = (htmlContent: string) => {
-    console.log('Creating data URL with HTML content:', htmlContent.substring(0, 100) + '...');
-    const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`;
-    console.log('Created data URL:', dataUrl.substring(0, 100) + '...');
-    return dataUrl;
   };
 
   if (!code) {
@@ -189,15 +191,14 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
               )}
             >
               <iframe
-  key={isRefreshing ? 'refreshing' : 'normal'}
-  srcDoc={code}
-  className="w-full h-full border-0"
-  title="Code Preview"
-  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-  onLoad={() => console.log('Iframe loaded successfully')}
-  onError={(e) => console.error('Iframe error:', e)}
-/>
-
+                key={isRefreshing ? 'refreshing' : 'normal'}
+                srcDoc={extractPureHtml(code)}
+                className="w-full h-full border-0"
+                title="Code Preview"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+                onLoad={() => console.log('Iframe loaded successfully')}
+                onError={(e) => console.error('Iframe error:', e)}
+              />
             </div>
           </div>
         ) : (
