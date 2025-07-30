@@ -54,12 +54,11 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
     setTimeout(() => setIsRefreshing(false), 500);
   };
 
-  const createBlobUrl = (htmlContent: string) => {
-    console.log('Creating blob with HTML content:', htmlContent.substring(0, 100) + '...');
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    console.log('Created blob URL:', url);
-    return url;
+  const createDataUrl = (htmlContent: string) => {
+    console.log('Creating data URL with HTML content:', htmlContent.substring(0, 100) + '...');
+    const dataUrl = `data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`;
+    console.log('Created data URL:', dataUrl.substring(0, 100) + '...');
+    return dataUrl;
   };
 
   if (!code) {
@@ -191,7 +190,7 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
             >
               <iframe
                 key={isRefreshing ? 'refreshing' : 'normal'}
-                src={createBlobUrl(code)}
+                src={createDataUrl(code)}
                 className="w-full h-full border-0"
                 title="Code Preview"
                 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
