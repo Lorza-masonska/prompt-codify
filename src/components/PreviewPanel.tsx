@@ -189,14 +189,15 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
               )}
             >
               <iframe
-                key={isRefreshing ? 'refreshing' : 'normal'}
-                src={createDataUrl(code)}
-                className="w-full h-full border-0"
-                title="Code Preview"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
-                onLoad={() => console.log('Iframe loaded successfully')}
-                onError={(e) => console.error('Iframe error:', e)}
-              />
+  key={isRefreshing ? 'refreshing' : 'normal'}
+  srcDoc={code}
+  className="w-full h-full border-0"
+  title="Code Preview"
+  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+  onLoad={() => console.log('Iframe loaded successfully')}
+  onError={(e) => console.error('Iframe error:', e)}
+/>
+
             </div>
           </div>
         ) : (
