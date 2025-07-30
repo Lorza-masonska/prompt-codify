@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Download, Code, Eye, RefreshCw, Smartphone, Monitor } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -9,17 +8,23 @@ interface PreviewPanelProps {
   filename: string;
 }
 
-// Funkcja usuwająca nagłówki, Markdown i inne zbędne fragmenty
+/**
+ * Funkcja wyciągająca czysty HTML z kodu generowanego przez AI.
+ * Usuwa nagłówki plików, formatowanie Markdown, zostawia tylko <html> lub <!DOCTYPE...>
+ */
 function extractPureHtml(code: string) {
   if (!code) return '';
-  // Usuń nagłówki pliku (np. "index.html" na początku linii)
-  code = code.replace(/^index\.html\s*/i, '');
-  // Usuń "CODE:" jeśli występuje
-  code = code.replace(/^CODE:\s*/i, '');
-  // Usuń znaczniki Markdown ```html ... ```
-  code = code.replace(/^```html([\s\S]*?)```$/i, '$1').trim();
-  // Usuń ogólne znaczniki Markdown ``` ... ```
-  code = code.replace(/^```([\s\S]*?)```$/i, '$1').trim();
+  // Znajdź początek kodu HTML (najpierw DOCTYPE, potem <html>)
+  const doctypeIndex = code.indexOf('<!DOCTYPE');
+  const htmlIndex = code.indexOf('<html');
+  let start = -1;
+  if (doctypeIndex !== -1) start = doctypeIndex;
+  else if (htmlIndex !== -1) start = htmlIndex;
+  if (start !== -1) {
+    code = code.slice(start);
+  }
+  // Usuń wszelkie znaczniki markdown na końcu
+  code = code.replace(/```+$/gm, '').trim();
   return code;
 }
 
