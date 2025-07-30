@@ -55,8 +55,11 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
   };
 
   const createBlobUrl = (htmlContent: string) => {
+    console.log('Creating blob with HTML content:', htmlContent.substring(0, 100) + '...');
     const blob = new Blob([htmlContent], { type: 'text/html' });
-    return URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
+    console.log('Created blob URL:', url);
+    return url;
   };
 
   if (!code) {
@@ -191,7 +194,9 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
                 src={createBlobUrl(code)}
                 className="w-full h-full border-0"
                 title="Code Preview"
-                sandbox="allow-scripts allow-same-origin"
+                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+                onLoad={() => console.log('Iframe loaded successfully')}
+                onError={(e) => console.error('Iframe error:', e)}
               />
             </div>
           </div>
