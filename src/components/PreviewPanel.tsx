@@ -8,24 +8,18 @@ interface PreviewPanelProps {
   filename: string;
 }
 
-/**
- * Funkcja wyciągająca czysty HTML z kodu generowanego przez AI.
- * Usuwa nagłówki plików, formatowanie Markdown, zostawia tylko <html> lub <!DOCTYPE...>
- */
+// Bardzo agresywna funkcja wyciągająca czysty HTML do podglądu
 function extractPureHtml(code: string) {
   if (!code) return '';
   // Znajdź początek kodu HTML (najpierw DOCTYPE, potem <html>)
-  const doctypeIndex = code.indexOf('<!DOCTYPE');
-  const htmlIndex = code.indexOf('<html');
-  let start = -1;
-  if (doctypeIndex !== -1) start = doctypeIndex;
-  else if (htmlIndex !== -1) start = htmlIndex;
-  if (start !== -1) {
-    code = code.slice(start);
-  }
-  // Usuń wszelkie znaczniki markdown na końcu
-  code = code.replace(/```+$/gm, '').trim();
-  return code;
+  const startIndex = code.indexOf('<!DOCTYPE') !== -1
+    ? code.indexOf('<!DOCTYPE')
+    : code.indexOf('<html');
+  if (startIndex === -1) return ''; // Nie znaleziono HTML!
+  // Znajdź koniec </html>
+  const endIndex = code.indexOf('</html>');
+  if (endIndex === -1) return code.slice(startIndex).trim();
+  return code.slice(startIndex, endIndex + 7).trim();
 }
 
 export function PreviewPanel({ code, filename }: PreviewPanelProps) {
@@ -67,6 +61,11 @@ export function PreviewPanel({ code, filename }: PreviewPanelProps) {
     setIsRefreshing(true);
     setTimeout(() => setIsRefreshing(false), 500);
   };
+
+  // Dla debugowania — sprawdź co trafia do podglądu
+  // Usuń jeśli nie chcesz logów!
+  console.log("Kod AI:", code);
+  console.log("Kod do podglądu:", extractPureHtml(code));
 
   if (!code) {
     return (
